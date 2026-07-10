@@ -1,0 +1,10 @@
+# 서드파티 바이너리 (install.sh 로 받음 — 저장소에 포함하지 않음)
+ch57x-keyboard-tool
+
+# padconf.py 가 생성/사용하는 파일 (루트만; examples/ 는 유지)
+/config.yaml
+/padconf.json
+
+# 파이썬
+__pycache__/
+*.pyc

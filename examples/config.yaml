@@ -1,0 +1,12 @@
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+layers:
+  - buttons:
+      - ["1", "2", "escape"]
+      - ["f14", "f15", "f5"]
+    knobs:
+      - ccw: "volumedown"
+        press: "mute"
+        cw: "volumeup"
