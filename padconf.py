@@ -31,10 +31,15 @@ PRODUCT_ID = "34960"    # 0x8890
 # ---- LED ----
 # 이 모델(0x8890)에서 도구가 제공하는 LED 제어는 '모드 인덱스' 하나뿐이다.
 # (색/밝기/키별 지정은 0x8840·0x8842 전용이라 여기선 불가.)
-# 도구는 범위를 검사하지 않고 어떤 값이든 성공으로 처리하므로, 실제 유효 모드는
-# 눈으로 확인해야 한다 -> GUI에서 인덱스를 순회하며 고르는 방식으로 지원한다.
+# ch57x-keyboard-tool 은 모드 바이트를 범위 검사 없이 그대로 보내므로 어떤 값이든
+# '성공'으로 보인다. 실제 개수는 다음 근거로 3개 안팎:
+#   - rOzzy1987/MacroPad 의 layouts.txt: `4489:34960` 항목이 `1:5:0:0:3`
+#     (레이어1 / 시퀀스5 / 딜레이X / 색상X / LED모드 3) 이고, 같은 README 는
+#     "only has 3 modes, on being the Off state" 라고 적고 있다.
+#   - 실기 확인: 3 이후로는 새로운 효과가 보이지 않음.
+# 그래서 0~3 만 노출한다(0 이 꺼짐).
 LED_MIN_MODE = 0
-LED_MAX_MODE = 15
+LED_MAX_MODE = 3
 LED_SERVICE_NAME = "macropad-led.service"
 LED_SERVICE_DIR = os.path.expanduser("~/.config/systemd/user")
 
@@ -486,8 +491,8 @@ def make_gui(run=True):
             v.addWidget(self.led_login_chk)
 
             note = QtWidgets.QLabel(
-                "이 패드(0x8890)는 도구가 '모드 번호'만 바꿀 수 있어 색·밝기 지정은 "
-                "불가합니다. 몇 번까지 실제 효과가 있는지도 알려주지 않으니, "
+                "이 패드(0x8890)는 '모드 번호'만 바꿀 수 있고 색·밝기 지정은 불가합니다. "
+                "모드는 3개뿐이라 0~3 만 보여줍니다 (0 = 꺼짐). "
                 "◀▶ 나 자동 순회로 눌러보고 마음에 드는 번호를 저장하세요.")
             note.setStyleSheet("color:#777;font-size:11px;")
             note.setWordWrap(True)

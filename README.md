@@ -99,9 +99,14 @@ python3 padconf.py --led-autostart on|off
 
 > **What the hardware allows:** on `1189:8890` the underlying tool exposes a single
 > *mode index* — there is no color, brightness or per-key control (those exist only for
-> `8840`/`8842`). It also accepts any number without validation, so it can't tell you how
-> many modes are real. That's why the UI is "step through and keep what looks right"
-> rather than a color picker.
+> `8840`/`8842`). It also writes the mode byte with no bounds check, so *every* value
+> looks like a success. **This pad has only 3 LED modes**, so the picker is limited to
+> `0–3` with `0` = off.
+>
+> Sources for the mode count: [`rOzzy1987/MacroPad`](https://github.com/rOzzy1987/MacroPad)
+> lists this exact device in `layouts.txt` as `4489:34960` → `1:5:0:0:3`
+> (*layers : sequence length : delay : color support : **LED modes***), and its README notes
+> the pad "doesn't support colors, and only has 3 modes, on being the Off state".
 
 ### Example: Claude Code / prompt answering
 
