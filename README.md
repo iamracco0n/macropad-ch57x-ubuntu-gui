@@ -40,6 +40,7 @@ in a GUI and, crucially, **automates the annoying parts**:
 - 3×2 buttons + knob (CCW / press / CW), edited visually.
 - Per-slot action: **Key / shortcut**, **Media / volume**, or **Launch app**.
 - One click to **validate + flash the pad + sync GNOME shortcuts**.
+- **LED backlight mode picker** — step through modes, keep the one you like, auto-restore it on login.
 - No `sudo` needed after a one-time udev rule.
 - Config is a plain JSON source-of-truth; generated YAML is compatible with `ch57x-keyboard-tool`.
 
@@ -81,6 +82,27 @@ python3 padconf.py
    - **Launch app** — `code`, `firefox`, or any command (F14–F18 + GNOME shortcut auto-managed).
 3. **💾 Save & apply to pad** — flashes the pad and syncs shortcuts.
 
+### LED backlight
+
+The pad's backlight lives in the **LED backlight** box (bottom-left).
+
+```bash
+python3 padconf.py --led 3           # apply mode 3 and remember it
+python3 padconf.py --restore-led     # re-apply the saved mode (retries while the pad enumerates)
+python3 padconf.py --led-autostart on|off
+```
+
+- **◀ / ▶** — jump to the previous/next mode and apply it immediately.
+- **🔄 Auto-cycle** — advances every 2 s; press again to stop on the one you like.
+- **Save this mode** — stores it in `padconf.json` and re-applies it on every *Save & apply*.
+- **Restore on login** — installs a `systemd --user` unit (`macropad-led.service`).
+
+> **What the hardware allows:** on `1189:8890` the underlying tool exposes a single
+> *mode index* — there is no color, brightness or per-key control (those exist only for
+> `8840`/`8842`). It also accepts any number without validation, so it can't tell you how
+> many modes are real. That's why the UI is "step through and keep what looks right"
+> rather than a color picker.
+
 ### Example: Claude Code / prompt answering
 
 A handy setup is mapping the top row to answer numbered CLI prompts:
@@ -103,6 +125,11 @@ A handy setup is mapping the top row to answer numbered CLI prompts:
 - **`Access denied` when flashing** → run `sudo ./setup-udev.sh`, replug, confirm you're in `plugdev`.
 - **Prebuilt binary won't run (`GLIBC_2.38 not found`)** → `install.sh` auto-falls back to an
   older release (v1.5.0) that runs on older glibc (e.g. Ubuntu 22.04).
+- **LED mode does nothing / looks identical** → not every index is a real mode on this
+  hardware, and the tool reports success either way. Try the neighbouring indices.
+- **Pad vanished entirely (`device not found`)** → check the *hub* first: `lsusb`, then
+  `cat /sys/bus/usb/devices/usb1/1-0:1.0/usb1-port*/state`. If a hub drops out, every device
+  behind it disappears at once and no amount of re-flashing helps.
 
 ## Credits & license
 
